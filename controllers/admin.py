@@ -1,29 +1,33 @@
+"""This code is meant to create users and prevent duplication. It is written in python coding language.
+   This file is the main engine in possessing webpage inputs. It uses characters in UTF8 can be from 1 to 4 bytes long. 
+   UTF-8 can represent any character in the Unicode standard. UTF-8 is backwards compatible with ASCII. 
+   UTF-8 is the preferred encoding for e-mail and web pages."""
 # -*- coding: utf-8 -*-
 
 """
-    Admin Controllers
+    Admin Controllers               #To control and manage the website activities like logins, signups and revoke requests
 """
 
-module = request.controller
+module = request.controller         #Requests is an Apache2 Licensed HTTP library, written in Python.  
 resourcename = request.function
 
 # S3 framework functions
 # -----------------------------------------------------------------------------
-def index():
+def index():                                         # To create position within an ordered list
     """ Module's Home Page """
 
-    module_name = settings.modules[module].name_nice
+    module_name = settings.modules[module].name_nice   #assign settings dynamically using normal Python syntax
     response.title = module_name
     return dict(module_name=module_name)
 
 # =============================================================================
-@auth.s3_requires_membership(1)
+@auth.s3_requires_membership(1)          #Flask-HTTPAuth is a simple extension that simplifies the use of HTTP authentication with Flask routes.
 def setting():
     """
         Custom page to link to those Settings which can be edited through the web interface
     """
 
-    return dict()
+    return dict()                         ##dict is Python's key/value hash table structure
 
 # =============================================================================
 # AAA
@@ -34,8 +38,8 @@ def role():
         Role Manager
     """
 
-    # ACLs as component of roles
-    s3db.add_components("auth_group",
+    # ACLs as component of roles                                                #ACLs access lists and roles assigned
+    s3db.add_components("auth_group",                                           #Add and authenticate with SQLite3
                         **{auth.permission.TABLENAME: "group_id"}
                        )
 
@@ -59,17 +63,18 @@ def role():
         return True
     s3.prep = prep
 
-    s3.stylesheets.append( "S3/role.css" )
+    s3.stylesheets.append( "S3/role.css" )           #Add css style to Amazon S3 hosting service 
     output = s3_rest_controller("auth", "group")
     return output
 
 # -----------------------------------------------------------------------------
-def user():
-    """ RESTful CRUD controller """
+def user():                                     #Defining users
+    """ RESTful CRUD controller """            #CRUD is basic operations to be done in a data repository to  directly handle records or data objects
+                                               #REST to work on resource representations, each one identified by an URL. 
+                                               #These are typically not data objects, but complex objects abstractions. For example, a resource can be a user's comment.
+    table = auth.settings.table_user           #Authenticate with user's table
 
-    table = auth.settings.table_user
-
-    if s3_has_role("ADMIN"):
+    if s3_has_role("ADMIN"):                   #If user is admin 
         # Needed as Admin has all roles
         pe_ids = None
     elif s3_has_role("ORG_ADMIN"):
@@ -101,12 +106,12 @@ def user():
     #                    auth_membership = "user_id",
     #                    )
 
-    list_fields = ["first_name",
+    list_fields = ["first_name",                    #Inputs for the tuple 
                    "last_name",
                    "email",
                    ]
     lappend = list_fields.append
-    if len(settings.get_L10n_languages()) > 1:
+    if len(settings.get_L10n_languages()) > 1:     #Adaptation of the input
         lappend("language")
     if auth.s3_has_role("ADMIN"):
         if settings.get_auth_admin_sees_organisation():
@@ -181,7 +186,7 @@ def user():
     set_method("auth", "user", method="link",
                action=link_user)
 
-    # CRUD Strings
+    # CRUD Strings                           #Edit/Delete 
     s3.crud_strings["auth_user"] = Storage(
         label_create = T("Create User"),
         title_display = T("User Details"),
@@ -199,7 +204,7 @@ def user():
         if r.representation != "html":
             return None
 
-        rheader = DIV()
+        rheader = DIV()         #DIV is a noting to grouping elements together
 
         if r.record:
             id = r.id
