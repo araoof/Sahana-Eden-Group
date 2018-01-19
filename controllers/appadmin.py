@@ -12,7 +12,7 @@ import gluon.contenttype
 import gluon.fileutils
 
 try:
-    import pygraphviz as pgv
+    import pygraphviz as pgv        #Python interface to the Graphviz graph layout and visualization package
 except ImportError:
     pgv = None
 
